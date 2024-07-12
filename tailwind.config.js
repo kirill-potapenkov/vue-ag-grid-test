@@ -7,4 +7,9 @@ module.exports = {
         extend: {},
     },
     plugins: [],
+    safelist: [
+        'text-teal-950',
+        'text-gray-400',
+
+    ]
 }
