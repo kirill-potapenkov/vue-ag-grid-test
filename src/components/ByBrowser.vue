@@ -1,5 +1,5 @@
 <template>
-  <div class='w-full' style='height: 48vh'>
+  <div class='w-full' style='height: 82vh'>
     <div class="p-2 m-2">
       <span v-if="isFetching">Fetching data...</span>
       <span v-if="isProcessing">Processing data...</span>
