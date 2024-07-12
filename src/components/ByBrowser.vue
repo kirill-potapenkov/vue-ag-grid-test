@@ -7,19 +7,27 @@
         Remote row number:
         <select v-model="pageSize" id="rowNumSelector">
           <option>1000</option>
-          <option>2000</option>
           <option>3000</option>
-          <option>4000</option>
-          <option>5000</option>
           <option>6000</option>
           <option>7000</option>
-          <option>8000</option>
           <option>9000</option>
           <option>10000</option>
+          <option>50000</option>
           <option>100000</option>
+          <option>150000</option>
           <option>200000</option>
         </select>
       </label>
+      <secondary-button @click="onBtNormal()">
+        1 - Grouping Active
+      </secondary-button>
+      <secondary-button @click="onBtPivotMode()">
+        2 - Grouping Active with Pivot Mode
+      </secondary-button>
+      <secondary-button @click="onBtFullPivot()">
+        3 - Grouping Active with Pivot Mode and Pivot Active
+      </secondary-button>
+
     </div>
 
     <ag-grid-vue
@@ -32,6 +40,7 @@
         :autoGroupColumnDef='autoGroupColumnDef'
         :rowData='rowData'
         :loading='true'
+        :sideBar="sideBar"
         :groupDisplayType="groupDisplayType"
 
     ></ag-grid-vue>
@@ -49,6 +58,7 @@ import {ClientSideRowModelModule} from '@ag-grid-community/client-side-row-model
 import {ModuleRegistry} from '@ag-grid-community/core';
 import {RowGroupingModule} from '@ag-grid-enterprise/row-grouping';
 import axios from "axios";
+import SecondaryButton from "@/components/SecondaryButton.vue";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule, RowGroupingModule]);
 
@@ -56,20 +66,21 @@ ModuleRegistry.registerModules([ClientSideRowModelModule, RowGroupingModule]);
 export default {
   name: 'ByBrowser',
   components: {
+    SecondaryButton,
     AgGridVue,
   },
   setup() {
     const columnDefs = ref([
-      {field: "country",},
-      {field: "city",},
+      {field: "country", pivot: true, enablePivot: true, aggFunc: "count"},
+      {field: "city", pivot: true, enablePivot: true, aggFunc: "count"},
       {field: "event_ts",},
       {field: "enginename",},
       {field: "region",},
-      {field: "browsername", rowGroup: true, hide: false},
-      {field: "browserversion", rowGroup: true, hide: false},
+      {field: "browsername", rowGroup: true, enableRowGroup: true, enablePivot: true},
+      {field: "browserversion", rowGroup: true, enableRowGroup: true, enablePivot: true},
       {field: "connection",},
-      {field: "host",},
-      {field: "isbot",},
+      {field: "host", aggFunc: "count"},
+      {field: "isbot", pivot: true, enablePivot: true, aggFunc: "count"},
       {field: "osname",},
       {field: "osversion",}
     ]);
@@ -79,7 +90,7 @@ export default {
     const gridApi = shallowRef();
     const defaultColDef = ref({
       flex: 1,
-      minWidth: 100,
+      minWidth: 150,
     });
 
     const autoGroupColumnDef = ref({
@@ -89,18 +100,20 @@ export default {
         suppressCount: false,
       }
     });
+    const sideBar = ref(null);
     const rowData = ref(null);
 
     onBeforeMount(() => {
       autoGroupColumnDef.value = {
-        minWidth: 200,
+        minWidth: 250,
       };
+      sideBar.value = "columns";
     });
 
     const isFetching = ref(true);
     const isProcessing = ref(false);
 
-    const pageSize = ref(2000);
+    const pageSize = ref(10000);
     const page = 1;
     const token = 'p.eyJ1IjogIjQ5ODM1ZDNlLTFlNzktNDA1Yi1hMWUxLWNhNjZmNzk2MzMyMCIsICJpZCI6ICI5NGI4NWI1NC1mNDViLTRmMWEtYjM0Ni05M2ViNThiOWZjZjYiLCAiaG9zdCI6ICJldV9zaGFyZWQifQ.-i23srOyg9PHfo6WsSw2eVhZmcDn_fhdFYCCclPC4nQ';
 
@@ -133,6 +146,46 @@ export default {
       gridApi.value.setGridOption('suppressAutoSize', true);
     };
 
+    const onBtNormal = () => {
+      gridApi.value.setGridOption("pivotMode", false);
+      gridApi.value.applyColumnState({
+        state: [
+          {colId: "browsername", rowGroup: true},
+          {colId: "browserversion", rowGroup: true},
+        ],
+        defaultState: {
+          pivot: false,
+          rowGroup: false,
+        },
+      });
+    };
+    const onBtPivotMode = () => {
+      gridApi.value.setGridOption("pivotMode", true);
+      gridApi.value.applyColumnState({
+        state: [
+          {colId: "browsername", rowGroup: true},
+          {colId: "browserversion", rowGroup: true},
+        ],
+        defaultState: {
+          pivot: false,
+          rowGroup: false,
+        },
+      });
+    };
+    const onBtFullPivot = () => {
+      gridApi.value.setGridOption("pivotMode", true);
+      gridApi.value.applyColumnState({
+        state: [
+          {colId: "browsername", rowGroup: true},
+          {colId: "browserversion", pivot: true},
+        ],
+        defaultState: {
+          pivot: false,
+          rowGroup: false,
+        },
+      });
+    };
+
     return {
       columnDefs,
       gridApi,
@@ -145,7 +198,11 @@ export default {
       pageSize,
       isFetching,
       isProcessing,
-      groupDisplayType
+      groupDisplayType,
+      sideBar,
+      onBtNormal,
+      onBtPivotMode,
+      onBtFullPivot
     };
   },
 
