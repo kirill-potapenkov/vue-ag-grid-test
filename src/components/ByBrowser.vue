@@ -42,6 +42,7 @@
         :loading='true'
         :sideBar="sideBar"
         :groupDisplayType="groupDisplayType"
+        rowGroupPanelShow="always"
 
     ></ag-grid-vue>
   </div>
@@ -71,18 +72,18 @@ export default {
   },
   setup() {
     const columnDefs = ref([
-      {field: "country", pivot: true, enablePivot: true, aggFunc: "count"},
-      {field: "city", pivot: true, enablePivot: true, aggFunc: "count"},
+      {field: "country", pivot: true, enablePivot: true, enableRowGroup: true, aggFunc: "count"},
+      {field: "city", pivot: true, enablePivot: true, enableRowGroup: true, aggFunc: "count"},
       {field: "event_ts",},
-      {field: "enginename",},
-      {field: "region",},
+      {field: "enginename", enableRowGroup: true,},
+      {field: "region", enableRowGroup: true,},
       {field: "browsername", rowGroup: true, enableRowGroup: true, enablePivot: true},
-      {field: "browserversion", rowGroup: true, enableRowGroup: true, enablePivot: true},
+      {field: "browserversion", rowGroup: true, enableRowGroup: true,},
       {field: "connection",},
       {field: "host", aggFunc: "count"},
       {field: "isbot", pivot: true, enablePivot: true, aggFunc: "count"},
-      {field: "osname",},
-      {field: "osversion",}
+      {field: "osname", enableRowGroup: true,},
+      {field: "osversion", enableRowGroup: true,}
     ]);
 
     const groupDisplayType = ref('multipleColumns');
@@ -164,7 +165,6 @@ export default {
       gridApi.value.applyColumnState({
         state: [
           {colId: "browsername", rowGroup: true},
-          {colId: "browserversion", rowGroup: true},
         ],
         defaultState: {
           pivot: false,
@@ -177,7 +177,6 @@ export default {
       gridApi.value.applyColumnState({
         state: [
           {colId: "browsername", rowGroup: true},
-          {colId: "browserversion", pivot: true},
         ],
         defaultState: {
           pivot: false,
