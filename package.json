@@ -8,8 +8,15 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "@ag-grid-community/client-side-row-model": "^32.0.1",
+    "@ag-grid-community/core": "^32.0.1",
+    "@ag-grid-community/vue3": "^32.0.1",
+    "@ag-grid-enterprise/row-grouping": "^32.0.1",
+    "ag-grid-enterprise": "^32.0.1",
+    "ag-grid-vue3": "^32.0.1",
+    "axios": "^1.7.2",
+    "core-js": "^3.37.1",
+    "vue": "^3.4.31"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -17,8 +24,11 @@
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "autoprefixer": "^10.4.19",
     "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3"
+    "eslint-plugin-vue": "^8.0.3",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.4"
   },
   "eslintConfig": {
     "root": true,
