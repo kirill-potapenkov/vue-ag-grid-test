@@ -43,6 +43,7 @@
         :sideBar="sideBar"
         :groupDisplayType="groupDisplayType"
         rowGroupPanelShow="always"
+        grandTotalRow="bottom"
 
     ></ag-grid-vue>
   </div>
@@ -71,19 +72,43 @@ export default {
     AgGridVue,
   },
   setup() {
+
+    var filterParams = {
+      comparator: (filterLocalDateAtMidnight, cellValue) => {
+        var dateAsString = cellValue;
+        if (dateAsString == null) return -1;
+        var dateParts = dateAsString.split("/");
+        var cellDate = new Date(
+            Number(dateParts[2]),
+            Number(dateParts[1]) - 1,
+            Number(dateParts[0]),
+        );
+        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+          return 0;
+        }
+        if (cellDate < filterLocalDateAtMidnight) {
+          return -1;
+        }
+        if (cellDate > filterLocalDateAtMidnight) {
+          return 1;
+        }
+        return 0;
+      },
+    };
+
     const columnDefs = ref([
-      {field: "country", pivot: true, enablePivot: true, enableRowGroup: true, aggFunc: "count"},
-      {field: "city", pivot: true, enablePivot: true, enableRowGroup: true, aggFunc: "count"},
-      {field: "event_ts",},
-      {field: "enginename", enableRowGroup: true,},
-      {field: "region", enableRowGroup: true,},
-      {field: "browsername", rowGroup: true, enableRowGroup: true, enablePivot: true},
-      {field: "browserversion", rowGroup: true, enableRowGroup: true,},
-      {field: "connection",},
-      {field: "host", aggFunc: "count"},
-      {field: "isbot", pivot: true, enablePivot: true, aggFunc: "count"},
-      {field: "osname", enableRowGroup: true,},
-      {field: "osversion", enableRowGroup: true,}
+      {field: "country", pivot: true, enablePivot: true, enableRowGroup: true, aggFunc: "count", filter: true},
+      {field: "city", pivot: true, enablePivot: true, enableRowGroup: true, aggFunc: "count", filter: true},
+      {field: "event_ts", filter: "agDateColumnFilter", filterParams: filterParams,},
+      {field: "enginename", enableRowGroup: true, filter: true},
+      {field: "region", enableRowGroup: true, filter: true},
+      {field: "browsername", rowGroup: true, enableRowGroup: true, enablePivot: true, filter: true},
+      {field: "browserversion", rowGroup: true, enableRowGroup: true, filter: true},
+      {field: "connection", filter: true},
+      {field: "host", aggFunc: "count", filter: true},
+      {field: "isbot", pivot: true, enablePivot: true, aggFunc: "count", filter: true},
+      {field: "osname", enableRowGroup: true, filter: true},
+      {field: "osversion", enableRowGroup: true, filter: true}
     ]);
 
     const groupDisplayType = ref('multipleColumns');
